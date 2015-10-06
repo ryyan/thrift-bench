@@ -37,6 +37,10 @@ go get
 go build
 
 cd /py
+wget -O thriftpy https://pypi.python.org/packages/source/t/thrift/thrift-0.9.2.tar.gz#md5=91f1c224c46a257bb428431943387dfd
+tar -zxf thriftpy && rm thriftpy
+cd thrift-0.9.2 && python setup.py install
+cd /py
 python -m compileall -f .
 ```
 

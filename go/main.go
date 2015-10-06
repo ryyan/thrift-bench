@@ -8,15 +8,20 @@ import (
 )
 
 func main() {
+	// Use maximum number of CPUs
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
+	// Parse command line arguments
 	num := flag.Int("num", 1, "Number of client requests to make")
-	server := flag.Bool("server", false, "Run server if provided; By default runs client")
+	server := flag.Bool("server", false, "Run server if provided; Run client by default")
 	flag.Parse()
 
-	transportFactory := thrift.NewTTransportFactory()
-	protocolFactory := thrift.NewTCompactProtocolFactory()
+	// Set transport. Should match what is in server.py
 	addr := "localhost:9090"
+	// Buffer size set to 4096 to match Python's DEFAULT_BUFFER,
+	// https://git1-us-west.apache.org/repos/asf?p=thrift.git;a=blob;f=lib/py/src/transport/TTransport.py
+	transportFactory := thrift.NewTBufferedTransportFactory(4096)
+	protocolFactory := thrift.NewTCompactProtocolFactory()
 
 	if *server {
 		runServer(transportFactory, protocolFactory, addr)
