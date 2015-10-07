@@ -1,3 +1,4 @@
+# https://hub.docker.com/_/alpine/
 FROM alpine:edge
 
 # Add edge repos for latest packages
@@ -10,4 +11,5 @@ RUN apk add -uUf bash git gcc \
   g++ linux-headers nano go python && \
   rm -rf /var/cache/apk/*
 
+# Set environment variables
 ENV GOPATH /go

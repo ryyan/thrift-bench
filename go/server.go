@@ -4,7 +4,7 @@ import (
 	"echo"
 	"fmt"
 
-	"git.apache.org/thrift.git/lib/go/thrift"
+	thrift "git.apache.org/thrift.git/lib/go/thrift"
 )
 
 type echoHandler struct{}
