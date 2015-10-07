@@ -1,37 +1,14 @@
-#!/usr/bin/env python
-import sys, glob
-sys.path.append('../echo')
-
-from Echo import Processor
-from ttypes import Message
-
-from thrift.transport import TSocket
-from thrift.transport import TTransport
-from thrift.protocol import TCompactProtocol
-from thrift.server import TServer
+from thriftpy import load
+from thriftpy.rpc import make_server
+echo_thrift = load("../../echo.thrift", module_name="echo_thrift")
 
 
-class EchoHandler:
+class echoHandler(object):
 
     def echo(self, msg):
         print ('PyServer: %s' % msg.text)
         return msg.text
 
-
-def runServer():
-    # Set processor
-    handler = EchoHandler()
-    processor = Processor(handler)
-
-    # Set transport
-    transport = TSocket.TServerSocket(port=9090)
-    tfactory = TTransport.TBufferedTransportFactory()
-    pfactory = TCompactProtocol.TCompactProtocolFactory()
-
-    # Build and start server
-    print ('PyServer started on %s' % transport.port)
-    server = TServer.TThreadedServer(processor, transport, tfactory, pfactory)
-    server.serve()
-
-# "Main"
-runServer()
+print ('PyServer started on %s' % 'localhost:9999')
+server = make_server(echo_thrift.Echo, echoHandler(), 'localhost', 9999)
+server.serve()

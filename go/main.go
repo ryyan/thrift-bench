@@ -13,7 +13,7 @@ func main() {
 	flag.Parse()
 
 	// Set transport
-	addr := "localhost:9090"
+	addr := "localhost:9999"
 	transportFactory := thrift.NewTBufferedTransportFactory(4096)
 	protocolFactory := thrift.NewTCompactProtocolFactory()
 
