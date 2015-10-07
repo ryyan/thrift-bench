@@ -12,10 +12,14 @@ import (
 // Number of concurrent clients to run
 const clientCount = 10
 
-func handleClient(c *client, num int) {
+func handleClient(transportFactory thrift.TTransportFactory, protocolFactory thrift.TProtocolFactory, addr string, num int) {
 	// Open independent client connection
-	client := c.open()
-	defer c.close()
+	var transport thrift.TTransport
+	transport, _ = thrift.NewTSocket(addr)
+	transport = transportFactory.GetTransport(transport)
+	client := echo.NewEchoClientFactory(transport, protocolFactory)
+	client.Transport.Open()
+	defer client.Transport.Close()
 
 	// Make thrift call and output result
 	msg := &echo.Message{Text: strconv.Itoa(num)}
@@ -34,41 +38,12 @@ func runClient(transportFactory thrift.TTransportFactory, protocolFactory thrift
 	var wg sync.WaitGroup
 	wg.Add(num)
 
-	for num > 0 {
-
+	for i := num; i > 0; i-- {
 		go func(i int) {
-			// Pass a new client for each request
-			client := client{transportFactory, protocolFactory, addr, nil}
-			handleClient(&client, i)
+			handleClient(transportFactory, protocolFactory, addr, i)
 			wg.Done()
-		}(num)
-
-		num--
+		}(i)
 	}
 
 	wg.Wait()
-}
-
-// Helper class used to build independent client connections
-type client struct {
-	transportFactory thrift.TTransportFactory
-	protocolFactory  thrift.TProtocolFactory
-	addr             string
-	client           *echo.EchoClient
-}
-
-// Build and open a new client connection
-func (c *client) open() *echo.EchoClient {
-	var transport thrift.TTransport
-	transport, _ = thrift.NewTSocket(c.addr)
-	transport = c.transportFactory.GetTransport(transport)
-
-	c.client = echo.NewEchoClientFactory(transport, c.protocolFactory)
-	c.client.Transport.Open()
-	return c.client
-}
-
-// Close connection
-func (c *client) close() {
-	c.client.Transport.Close()
 }

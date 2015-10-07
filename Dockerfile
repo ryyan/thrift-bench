@@ -1,10 +1,13 @@
-FROM alpine:latest
+FROM alpine:edge
+
+# Add edge repos for latest packages
+RUN rm /etc/apk/repositories && touch /etc/apk/repositories
+RUN echo 'http://dl-4.alpinelinux.org/alpine/edge/main/' >> /etc/apk/repositories
+RUN echo 'http://dl-4.alpinelinux.org/alpine/edge/community/' >> /etc/apk/repositories
 
 # Install required system packages
-RUN apk update && \
-  apk add --update  bash git gcc curl mercurial make binutils bison \
-  g++ linux-headers nano go && \
-  apk upgrade && \
+RUN apk add -uUf bash git gcc \
+  g++ linux-headers nano go python && \
   rm -rf /var/cache/apk/*
 
 ENV GOPATH /go

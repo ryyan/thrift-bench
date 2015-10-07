@@ -20,17 +20,17 @@ class EchoHandler:
 
 
 def runServer():
-    # Set handler
+    # Set processor
     handler = EchoHandler()
     processor = Processor(handler)
 
-    # Set transport. Should match what is in main.go.
+    # Set transport
     transport = TSocket.TServerSocket(port=9090)
     tfactory = TTransport.TBufferedTransportFactory()
     pfactory = TCompactProtocol.TCompactProtocolFactory()
 
     # Build and start server
-    print ('PyServer started on port %s' % transport.port)
+    print ('PyServer started on %s' % transport.port)
     server = TServer.TThreadedServer(processor, transport, tfactory, pfactory)
     server.serve()
 
