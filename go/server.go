@@ -3,33 +3,27 @@ package main
 import (
 	"echo"
 	"fmt"
+	"net"
+	"net/rpc"
 
-	thrift "git.apache.org/thrift.git/lib/go/thrift"
+	thrift "github.com/samuel/go-thrift/thrift"
 )
 
 type echoHandler struct{}
 
 func (p *echoHandler) Echo(msg *echo.Message) (r string, err error) {
-	fmt.Println("GoServer: " + msg.Text)
-	return msg.Text, nil
+	fmt.Println("GoServer: " + *msg.Text)
+	return *msg.Text, nil
 }
 
-func runServer(transportFactory thrift.TTransportFactory, protocolFactory thrift.TProtocolFactory, addr string) {
+func runServer(port string) {
 	// Set processor
-	handler := &echoHandler{}
-	processor := echo.NewEchoProcessor(handler)
+	rpc.RegisterName("Thrift", &echo.EchoServer{Implementation: &echoHandler{}})
+	ln, _ := net.Listen("tcp", port)
 
-	// Set transport
-	transport, _ := thrift.NewTServerSocket(addr)
-
-	// Build and start server
-	fmt.Println("GoServer started on ", addr)
-	server := thrift.NewTSimpleServer4(processor, transport, transportFactory, protocolFactory)
-	server.Serve()
+	for {
+		conn, _ := ln.Accept()
+		t := thrift.NewTransport(thrift.NewFramedReadWriteCloser(conn, 0), thrift.BinaryProtocol)
+		go rpc.ServeCodec(thrift.NewServerCodec(t))
+	}
 }
-
-/*
-Even though we're not using a TThreadedServer like in server.py,
-NewTSimpleServer spawns a goroutine to handle each incoming request,
-https://git1-us-west.apache.org/repos/asf?p=thrift.git;a=blob;f=lib/go/thrift/simple_server.go
-*/

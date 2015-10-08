@@ -1,4 +1,6 @@
-namespace * echo
+#!/usr/local/bin/thrift --go --py
+namespace go echo
+namespace py echo
 
 struct Message {
   1: optional string text;

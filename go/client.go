@@ -3,49 +3,40 @@ package main
 import (
 	"echo"
 	"fmt"
+	"net"
+	"strconv"
 	"sync"
 
-	thrift "git.apache.org/thrift.git/lib/go/thrift"
-	uuid "github.com/satori/go.uuid"
+	thrift "github.com/samuel/go-thrift/thrift"
 )
 
-// Number of concurrent clients to run
-const clientCount = 10
-
-func handleClient(transportFactory thrift.TTransportFactory, protocolFactory thrift.TProtocolFactory, addr string, num int) {
+func handleClient(addr string, num int) {
 	// Open independent client connection
-	var transport thrift.TTransport
-	transport, _ = thrift.NewTSocket(addr)
-	transport = transportFactory.GetTransport(transport)
-	client := echo.NewEchoClientFactory(transport, protocolFactory)
-	client.Transport.Open()
-	defer client.Transport.Close()
+	conn, _ := net.Dial("tcp", addr)
+	t := thrift.NewTransport(thrift.NewFramedReadWriteCloser(conn, 0), thrift.BinaryProtocol)
+	client := thrift.NewClient(t, false)
+	defer client.Close()
+	ec := echo.EchoClient{Client: client}
 
-	for num > 0 {
+	for i := num; i > 0; i-- {
 		// Make thrift call and output result
-		msg := &echo.Message{Text: uuid.NewV4().String()}
-		ret, err := client.Echo(msg)
-
-		if msg.Text == ret {
-			fmt.Println("GoClient: " + ret)
-		} else if err != nil {
-			fmt.Println("GoClient: ERROR from server " + err.Error())
-		} else {
-			fmt.Println("GoClient: ERROR for " + msg.Text)
-		}
-
-		num--
+		txt := strconv.Itoa(i)
+		res, _ := ec.Echo(&echo.Message{Text: &txt})
+		fmt.Println("GoClient: " + res)
 	}
 }
 
-func runClient(transportFactory thrift.TTransportFactory, protocolFactory thrift.TProtocolFactory, addr string, num int) {
+func runClient(addr string, num int) {
+	// Number of concurrent clients to run
+	clientCount := 10
+
 	var wg sync.WaitGroup
 	wg.Add(clientCount)
 
 	// Spawn client connections
 	for i := clientCount; i > 0; i-- {
 		go func(num int) {
-			handleClient(transportFactory, protocolFactory, addr, num)
+			handleClient(addr, num)
 			wg.Done()
 		}(num)
 	}
