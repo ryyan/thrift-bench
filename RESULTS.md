@@ -8,28 +8,28 @@ Both Go and Python clients running 10 concurrent clients, and each client makes 
 ```
 Go server & Go client
 
-real	1m37.771s
+real	0m40.140s
 user	0m0.000s
 sys	0m0.000s
 
 
 Py server & Py client
 
-real	2m27.169s
+real	1m19.654s
 user	0m0.000s
 sys	0m0.000s
 
 
 Go server & Py client
 
-real	2m24.881s
+real	1m0.976s
 user	0m0.000s
 sys	0m0.000s
 
 
 Py server & Go client
 
-real	3m1.109s
+real	1m23.829s
 user	0m0.000s
 sys	0m0.000s
 ```
@@ -38,30 +38,35 @@ sys	0m0.000s
 
 ```
 $ docker info
-Containers: 9
-Images: 23
+Containers: 6
+Images: 35
 Storage Driver: aufs
  Root Dir: /var/lib/docker/aufs
  Backing Filesystem: extfs
- Dirs: 41
+ Dirs: 47
  Dirperm1 Supported: true
 Execution Driver: native-0.2
-Kernel Version: 3.16.0-4-amd64
-Operating System: Debian GNU/Linux 8 (jessie)
-CPUs: 2
-Total Memory: 1.963 GiB
-WARNING: No memory limit support
+Logging Driver: json-file
+Kernel Version: 3.19.0-30-generic
+Operating System: Ubuntu 15.04
+CPUs: 4
+Total Memory: 3.641 GiB
 WARNING: No swap limit support
 
 $ docker version
-Client version: 1.6.2
-Client API version: 1.18
-Go version (client): go1.3.3
-Git commit (client): 7c8fca2
-OS/Arch (client): linux/amd64
-Server version: 1.6.2
-Server API version: 1.18
-Go version (server): go1.3.3
-Git commit (server): 7c8fca2
-OS/Arch (server): linux/amd64
+Client:
+ Version:      1.8.2
+ API version:  1.20
+ Go version:   go1.4.2
+ Git commit:   0a8c2e3
+ Built:        Thu Sep 10 19:21:21 UTC 2015
+ OS/Arch:      linux/amd64
+
+Server:
+ Version:      1.8.2
+ API version:  1.20
+ Go version:   go1.4.2
+ Git commit:   0a8c2e3
+ Built:        Thu Sep 10 19:21:21 UTC 2015
+ OS/Arch:      linux/amd64
 ```
