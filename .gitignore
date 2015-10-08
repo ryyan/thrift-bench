@@ -1,4 +1,8 @@
 go/go
 py/py
+gen-py
+gen-go
+__pycache__
+
 *log
 *.pyc

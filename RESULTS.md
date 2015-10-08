@@ -6,67 +6,46 @@ Both Go and Python clients running 10 concurrent clients, and each client makes 
 ## Go server & Go client
 
 ```
-cd /go/src/go
-./go -server > 1.log &
-time ./go -num 100000 > 2.log
+Go server & Go client
 
-real	1m16.484s
-user	0m0.004s
+real	1m37.771s
+user	0m0.000s
 sys	0m0.000s
-```
 
-### Py server & Py client
 
-```
-cd /py/py/
-python server.pyc > 1.log &
-time python client.pyc 100000 > 2.log
+Py server & Py client
 
-real	6m56.417s
+real	2m27.169s
+user	0m0.000s
+sys	0m0.000s
+
+
+Go server & Py client
+
+real	2m24.881s
+user	0m0.000s
+sys	0m0.000s
+
+
+Py server & Go client
+
+real	3m1.109s
 user	0m0.000s
 sys	0m0.000s
 ```
 
-### Go server & Py client
-
-```
-cd /go/src/go
-./go -server > 1.log &
-cd /py/py/
-rm 2.log
-time python client.pyc 100000 > 2.log
-
-real	7m40.482s
-user	0m0.000s
-sys	0m0.000s
-```
-
-### Py server & Go client
-
-```
-cd /py/py
-python server.pyc > 1.log &
-cd /go/src/go
-time ./go -num 100000 > 2.log
-
-real	5m18.685s
-user	0m0.000s
-sys	0m0.000s
-```
-
-### Host Info
+## Host Info
 
 ```
 $ docker info
-Containers: 26
-Images: 18
+Containers: 9
+Images: 23
 Storage Driver: aufs
  Root Dir: /var/lib/docker/aufs
  Backing Filesystem: extfs
- Dirs: 72
+ Dirs: 41
  Dirperm1 Supported: true
 Execution Driver: native-0.2
-Logging Driver: json-file
 Kernel Version: 3.16.0-4-amd64
 Operating System: Debian GNU/Linux 8 (jessie)
 CPUs: 2
@@ -75,19 +54,14 @@ WARNING: No memory limit support
 WARNING: No swap limit support
 
 $ docker version
-Client:
- Version:      1.8.2
- API version:  1.20
- Go version:   go1.4.2
- Git commit:   0a8c2e3
- Built:        Thu Sep 10 19:08:05 UTC 2015
- OS/Arch:      linux/amd64
-
-Server:
- Version:      1.8.2
- API version:  1.20
- Go version:   go1.4.2
- Git commit:   0a8c2e3
- Built:        Thu Sep 10 19:08:05 UTC 2015
- OS/Arch:      linux/amd64
+Client version: 1.6.2
+Client API version: 1.18
+Go version (client): go1.3.3
+Git commit (client): 7c8fca2
+OS/Arch (client): linux/amd64
+Server version: 1.6.2
+Server API version: 1.18
+Go version (server): go1.3.3
+Git commit (server): 7c8fca2
+OS/Arch (server): linux/amd64
 ```

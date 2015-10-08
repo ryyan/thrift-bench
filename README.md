@@ -6,45 +6,26 @@ Project used to benchmark performance for Thrift in different languages.
 
 ### Build and run docker image
 
-This could take a few minutes
+This could take a few minutes. Total size ~600MB.
 
 ```
-sudo docker build -t thrift-benchmark --no-cache .
+docker build -t thrift-benchmark --no-cache .
 
-sudo docker run -it --rm \
+docker run -it --rm \
   -v "$PWD"/go:/go/src/go \
   -v "$PWD"/py:/py/py \
-  -v "$PWD"/echo.thrift:/echo.thrift \
+  -v "$PWD"/sh:/sh \
   thrift-benchmark bash
 ```
 
-### Build within docker image
+### Build and run tests within docker image
 
 ```
-/go/bin/generator /echo.thrift /go/src/
-cd /go/src/go
-go get && go build
-
-cd /py/py
-python3 -m compileall .
+bash /sh/run
 ```
-
-## Run benchmarks within docker image
 
 View the current results [here](RESULTS.md)
 
-### Go server & client
+### Bugs
 
-```
-cd /go/src/go
-./go -server &
-./go -num 1000
-```
-
-### Python server & client
-
-```
-cd /py/py
-python3 server.py &
-python3 client.py 1000
-```
+- Mounting volumes might not work when using `docker run` directly on OSX.

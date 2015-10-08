@@ -6,11 +6,15 @@ import (
 	"net"
 	"strconv"
 	"sync"
+	"sync/atomic"
 
 	thrift "github.com/samuel/go-thrift/thrift"
+	uuid "github.com/satori/go.uuid"
 )
 
-func handleClient(addr string, num int) {
+var count uint64
+
+func handleClient(addr string, num int, payload string) {
 	// Open independent client connection
 	conn, _ := net.Dial("tcp", addr)
 	t := thrift.NewTransport(thrift.NewFramedReadWriteCloser(conn, 0), thrift.BinaryProtocol)
@@ -20,9 +24,11 @@ func handleClient(addr string, num int) {
 
 	for i := num; i > 0; i-- {
 		// Make thrift call and output result
-		txt := strconv.Itoa(i)
+		txt := payload + strconv.Itoa(i)
 		res, _ := ec.Echo(&echo.Message{Text: &txt})
-		fmt.Println("GoClient: " + res)
+		if txt == res {
+			atomic.AddUint64(&count, 1)
+		}
 	}
 }
 
@@ -36,10 +42,19 @@ func runClient(addr string, num int) {
 	// Spawn client connections
 	for i := clientCount; i > 0; i-- {
 		go func(num int) {
-			handleClient(addr, num)
+			// Create a decent sized payload
+			uid := uuid.NewV4().String()
+			payload := uid + uid + uid + uid + uid + uid
+			payload += payload + payload + payload
+			handleClient(addr, num, payload)
 			wg.Done()
 		}(num)
 	}
-
 	wg.Wait()
+
+	if int(count) != (clientCount * num) {
+		fmt.Println("ERROR: Actual and expected completed requests mismatch")
+		fmt.Println("Expected: " + strconv.Itoa(clientCount*num))
+		fmt.Println("Actual: " + strconv.FormatUint(count, 10))
+	}
 }
