@@ -1,15 +1,11 @@
 #!/bin/bash
-echo
 echo 'Building go code'
-/go/bin/generator /sh/echo.thrift /go/src/
-cd /go/src/go
-go clean
-go get
-go build
+/go/bin/generator /app/sh/echo.thrift /app/go
+cd /app/go
+go clean && go get && go build
 
-sleep 2 && echo
 echo 'Building py code'
-cd /py/py
+cd /app/py
 rm -rf __pycache__
 rm -rf *.pyc
 python3 -m compileall .
