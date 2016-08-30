@@ -14,7 +14,7 @@ import (
 
 var count uint64
 
-func handleClient(addr string, num int, payload string) {
+func handleClient(addr string, num int) {
 	// Open independent client connection
 	conn, _ := net.Dial("tcp", addr)
 	t := thrift.NewTransport(thrift.NewFramedReadWriteCloser(conn, 0), thrift.BinaryProtocol)
@@ -22,11 +22,14 @@ func handleClient(addr string, num int, payload string) {
 	defer client.Close()
 	ec := echo.EchoClient{Client: client}
 
-	for i := num; i > 0; i-- {
-		// Make thrift call and output result
-		txt := payload + strconv.Itoa(i)
-		res, _ := ec.Echo(&echo.Message{Text: &txt})
-		if txt == res {
+	// UUID
+	uid := uuid.NewV4().String()
+
+	for i := 0; i < num; i++ {
+		// Make thrift call and increment atomic count
+		txt := uid + strconv.Itoa(i)
+		ret, _ := ec.Echo(&echo.Message{Text: &txt})
+		if txt == ret {
 			atomic.AddUint64(&count, 1)
 		}
 	}
@@ -42,11 +45,7 @@ func runClient(addr string, num int) {
 	// Spawn client connections
 	for i := clientCount; i > 0; i-- {
 		go func(num int) {
-			// Create a decent sized payload
-			uid := uuid.NewV4().String()
-			payload := uid + uid + uid + uid + uid + uid
-			payload += payload + payload + payload
-			handleClient(addr, num, payload)
+			handleClient(addr, num)
 			wg.Done()
 		}(num)
 	}

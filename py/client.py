@@ -4,7 +4,7 @@ from multiprocessing import Process, Value
 from thriftpy import load
 from thriftpy.rpc import make_client
 from thriftpy.transport import TFramedTransportFactory
-echo_thrift = load("/sh/echo.thrift", module_name="echo_thrift")
+echo_thrift = load("/app/sh/echo.thrift", module_name="echo_thrift")
 
 
 def handleClient(num, actual):
@@ -12,16 +12,14 @@ def handleClient(num, actual):
     client = make_client(service=echo_thrift.Echo, host='127.0.0.1',
                          port=9999, trans_factory=TFramedTransportFactory())
 
-    # Create a decent sized payload
+    # UUID
     uid = str(uuid4())
-    payload = uid + uid + uid + uid + uid + uid
-    payload += payload + payload + payload
 
     for i in range(num):
-        # Make thrift call and output result
-        msg = echo_thrift.Message(text=payload + str(i))
-        ret = client.echo(msg)
-        if (msg.text == ret):
+        # Make thrift call and increment atomic count
+        txt = uid + str(i)
+        ret = client.echo(echo_thrift.Message(text=txt))
+        if (txt == ret):
             with actual.get_lock():
                 actual.value += 1
 

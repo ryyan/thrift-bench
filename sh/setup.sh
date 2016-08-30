@@ -1,11 +1,11 @@
 #!/bin/bash
-echo 'Building go code'
-/go/bin/generator /app/sh/echo.thrift /app/go
+echo 'Building go'
+$GOPATH/bin/generator /app/sh/echo.thrift $GOPATH/src
 cd /app/go
-go clean && go get && go build
+go clean && go get -d && go build
 
-echo 'Building py code'
+echo 'Building py'
 cd /app/py
-rm -rf __pycache__
-rm -rf *.pyc
-python3 -m compileall .
+rm -rf __pycache__ > /dev/null
+rm -rf *.pyc > /dev/null
+python3 -m compileall . > /dev/null

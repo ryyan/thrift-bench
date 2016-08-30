@@ -1,37 +1,46 @@
 #!/bin/bash
-bash /sh/setup
-sleep 1 && pkill -f server
 
-sleep 2 && echo
-echo 'Go server & Go client'
-cd /go/src/go
-./go -server &
-sleep 3
-time ./go -num 100000
-sleep 1 && pkill -f server
+function kill_server {
+  # Kill any currently running thrift servers
+  pkill -f server && sleep 6
+}
 
-sleep 2 && echo
-echo 'Py server & Py client'
-cd /py/py/
-python3 server.py &
-sleep 3
-time python3 client.py 100000
-sleep 1 && sleep 1 && pkill -f server
+function run_go_server {
+  echo '# Go server'
+  kill_server
+  cd /app/go
+  ./go -server &
+}
 
-sleep 2 && echo
-echo 'Go server & Py client'
-cd /go/src/go
-./go -server &
-sleep 3
-cd /py/py/
-time python3 client.py 100000
-sleep 1 && pkill -f server
+function run_py_server {
+  echo '# Py server'
+  kill_server
+  cd /app/py
+  python3 server.py &
+}
 
-sleep 2 && echo
-echo 'Py server & Go client'
-cd /py/py
-python3 server.py &
-sleep 3
-cd /go/src/go
-time ./go -num 100000
-sleep 1 && pkill -f server
+function run_go_client {
+  echo '## Go client' && sleep 10
+  cd /app/go
+  time ./go -num 100000
+}
+
+function run_py_client {
+  echo '## Py client' && sleep 10
+  cd /app/py
+  time python3 client.py 100000
+}
+
+
+# Setup
+bash /app/sh/setup.sh
+
+# Go server tests
+run_go_server
+run_go_client
+run_py_client
+
+# Python server tests
+run_py_server
+run_py_client
+run_go_client

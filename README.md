@@ -10,7 +10,7 @@ This could take a few minutes. Total size ~600MB.
 
 ```
 docker build -t thrift-benchmark --no-cache .
-docker run -it -v ${PWD}:/app thrift-benchmark bash
+docker run -it --rm -v ${PWD}:/app thrift-benchmark
 ```
 
 ### Build and run tests within docker image
