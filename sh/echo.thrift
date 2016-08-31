@@ -8,4 +8,3 @@ struct Message {
 service Echo {
   string echo(1:Message msg);
 }
-
