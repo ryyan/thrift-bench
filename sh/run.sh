@@ -19,28 +19,23 @@ function run_py_server {
   python3 server.py &
 }
 
-function run_go_client {
+function run_clients {
   echo '## Go client' && sleep 10
   cd /app/go
   time ./go -num 100000
-}
 
-function run_py_client {
   echo '## Py client' && sleep 10
   cd /app/py
   time python3 client.py 100000
 }
-
 
 # Setup
 bash /app/sh/setup.sh
 
 # Go server tests
 run_go_server
-run_go_client
-run_py_client
+run_clients
 
 # Python server tests
 run_py_server
-run_py_client
-run_go_client
+run_clients
